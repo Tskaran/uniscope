@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>University of Surrey — Requirements 2026 | UniScope</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0e14;
+  --surface: #16161f;
+  --surface2: #1c1c28;
+  --border: #2a2618;
+  --accent: #f0c040;
+  --accent2: #ff9f00;
+  --accent-glow: rgba(240,192,64,0.12);
+  --gold: #f0c040;
+  --green: #34d399;
+  --red: #f87171;
+  --orange: #fb923c;
+  --text: #f0e8c8;
+  --muted: #5a5240;
+  --dim: #8a7d5a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; padding-bottom: 80px; }
+
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0;
+  background-image: linear-gradient(rgba(240,192,64,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(240,192,64,0.04) 1px, transparent 1px);
+  background-size: 40px 40px; pointer-events: none;
+}
+.bg-glow {
+  position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+  width: 800px; height: 400px;
+  background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%);
+  pointer-events: none; z-index: 0;
+}
+
+#app { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; padding: 32px 24px; }
+
+.top-nav { margin-bottom: 32px; }
+.back-link { color: var(--dim); text-decoration: none; font-size: 14px; transition: color 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+.back-link:hover { color: var(--gold); }
+
+header { text-align: center; margin-bottom: 40px; }
+.logo-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(240,192,64,0.1); border: 1px solid rgba(240,192,64,0.25);
+  border-radius: 100px; padding: 6px 16px; margin-bottom: 24px;
+  font-size: 12px; font-weight: 500; color: var(--gold); letter-spacing: 0.08em; text-transform: uppercase;
+}
+h1 {
+  font-family: 'Playfair Display', serif; font-size: clamp(32px,5vw,48px); font-weight: 900; line-height: 1.1;
+  background: linear-gradient(135deg, #fff 0%, #ffdf85 50%, var(--accent) 100%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px;
+}
+.subtitle { color: var(--dim); font-size: 16px; max-width: 520px; margin: 0 auto; line-height: 1.6; }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; padding: 32px; margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.card-title {
+  display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; color: var(--gold);
+  margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--surface2);
+}
+
+.criteria-list { list-style: none; margin-bottom: 24px; }
+.criteria-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; border-bottom: 1px dashed var(--surface2); padding-bottom: 16px; }
+.criteria-item:last-child { margin-bottom: 0; border-bottom: none; padding-bottom: 0; }
+.criteria-board { font-weight: 600; font-size: 15px; color: var(--text); margin-bottom: 4px; }
+.criteria-req { color: var(--dim); font-size: 14px; }
+.criteria-req strong { color: var(--gold); }
+.criteria-res { display: inline-block; margin-top: 8px; background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.3); color: var(--green); padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 600; }
+
+.excluded-section { margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--surface2); }
+.excluded-title { font-size: 13px; color: var(--dim); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 12px; }
+.tag-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip-red { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); color: #fca5a5; border-radius: 6px; padding: 5px 12px; font-size: 13px; }
+
+.update-alert {
+  background: rgba(52,211,153,0.08); border: 1px solid rgba(52,211,153,0.4);
+  border-radius: 12px; padding: 16px; margin-top: 24px;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.update-alert-icon { font-size: 20px; }
+.update-alert-title { color: var(--green); font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+.update-alert-body { color: #a7f3d0; font-size: 13px; line-height: 1.5; }
+
+.validity-note { margin-top: 20px; font-size: 13px; color: var(--dim); font-style: italic; text-align: center; }
+
+/* MOI Accordions */
+.search-box {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 14px 18px 14px 44px;
+  font-family: 'DM Sans', sans-serif; font-size: 15px; color: var(--text);
+  margin-bottom: 24px; outline: none; transition: border-color .2s;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%238a7d5a' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: 16px center;
+}
+.search-box:focus { border-color: var(--accent); }
+
+.accordion { margin-bottom: 12px; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--surface2); }
+.accordion-btn {
+  width: 100%; background: none; border: none; padding: 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; color: var(--text);
+  cursor: pointer; text-align: left; transition: background 0.2s;
+}
+.accordion-btn:hover { background: rgba(255,255,255,0.02); }
+.accordion-icon { color: var(--gold); transition: transform 0.3s; }
+.accordion.active .accordion-icon { transform: rotate(180deg); }
+.accordion-content { display: none; padding: 0 16px 16px; border-top: 1px solid var(--border); }
+.accordion.active .accordion-content { display: block; }
+.uni-list { list-style: none; margin-top: 12px; }
+.uni-item { padding: 8px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 14px; color: var(--dim); }
+.uni-item:last-child { border-bottom: none; }
+.uni-item.hidden { display: none; }
+
+.download-wrap { text-align: center; margin-top: 40px; }
+.download-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #111; padding: 18px 36px; border-radius: 16px;
+  font-family: 'DM Sans', sans-serif; font-size: 18px; font-weight: 700;
+  text-decoration: none; transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 8px 24px rgba(240,192,64,0.25);
+}
+.download-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(240,192,64,0.3); }
+
+@media(max-width:640px) {
+  .card { padding: 24px; }
+  h1 { font-size: 28px; }
+}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<div id="app">
+  <div class="top-nav">
+    <a href="/" class="back-link">← Back to UniScope</a>
+  </div>
+
+  <header>
+    <div class="logo-badge">UniScope Public Access</div>
+    <h1>University of Surrey</h1>
+    <p class="subtitle">Admissions Requirements & English Language Guidelines for 2026 Intakes</p>
+  </header>
+
+  <div class="card">
+    <div class="card-title">📝 IELTS Waiver Criteria</div>
+    
+    <ul class="criteria-list">
+      <li class="criteria-item">
+        <div style="font-size:24px;margin-top:2px">📘</div>
+        <div>
+          <div class="criteria-board">CBSE / ISC Boards</div>
+          <div class="criteria-req">Minimum <strong>70%</strong> in English subject</div>
+          <div class="criteria-res">✓ IELTS Waiver Granted</div>
+        </div>
+      </li>
+      <li class="criteria-item">
+        <div style="font-size:24px;margin-top:2px">📙</div>
+        <div>
+          <div class="criteria-board">Indian State Boards</div>
+          <div class="criteria-req">Minimum <strong>80%</strong> in English</div>
+          <div class="criteria-res">✓ Eligible for IELTS 6.5 (no band below 6.0)</div>
+          <div style="margin-top:12px" class="criteria-req">Minimum <strong>85%</strong> in English</div>
+          <div class="criteria-res">✓ Eligible for IELTS 7.0 (no band below 6.5)</div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="excluded-section">
+      <div class="excluded-title">Waiver NOT available for these boards:</div>
+      <div class="tag-cloud">
+        <div class="chip-red">Gujarat</div>
+        <div class="chip-red">Uttar Pradesh</div>
+        <div class="chip-red">Bihar</div>
+        <div class="chip-red">Punjab</div>
+        <div class="chip-red">Haryana</div>
+        <div class="chip-red">Uttarakhand</div>
+      </div>
+    </div>
+
+    <div class="update-alert">
+      <div class="update-alert-icon">✨</div>
+      <div>
+        <div class="update-alert-title">New Update — Effective February 2026 Intake</div>
+        <div class="update-alert-body">IELTS waivers are now available for <b>Andhra Pradesh</b> and <b>Telangana</b> state boards, provided the percentage criteria above are met.</div>
+      </div>
+    </div>
+
+    <div class="validity-note">
+      * Note: English language scores must have been achieved within 5 years of the course start date.
+    </div>
+  </div>
+
+  <div class="card" id="moiCard">
+    <div class="card-title">🏛 MOI Accepted Universities</div>
+    <p style="color:var(--dim);font-size:14px;margin-bottom:20px;">Search our list of Indian universities whose Medium of Instruction (MOI) letters are accepted by the University of Surrey.</p>
+    
+    <input type="text" class="search-box" id="moiSearch" placeholder="Filter by university or state..." onkeyup="filterMOI()">
+
+    <div id="accordionGroup">
+      <!-- These sections are populated with common sample data reflecting standard accepted lists -->
+      
+      <div class="accordion">
+        <button class="accordion-btn" onclick="toggleAcc(this)">
+          Andhra Pradesh
+          <span class="accordion-icon">▼</span>
+        </button>
+        <div class="accordion-content">
+          <ul class="uni-list">
+            <li class="uni-item">Andhra University</li>
+            <li class="uni-item">Jawaharlal Nehru Technological University (JNTU), Kakinada</li>
+            <li class="uni-item">Jawaharlal Nehru Technological University (JNTU), Anantapur</li>
+            <li class="uni-item">Sri Venkateswara University</li>
+            <li class="uni-item">Acharya Nagarjuna University</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <button class="accordion-btn" onclick="toggleAcc(this)">
+          Telangana
+          <span class="accordion-icon">▼</span>
+        </button>
+        <div class="accordion-content">
+          <ul class="uni-list">
+            <li class="uni-item">Osmania University</li>
+            <li class="uni-item">Jawaharlal Nehru Technological University (JNTU), Hyderabad</li>
+            <li class="uni-item">Kakatiya University</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <button class="accordion-btn" onclick="toggleAcc(this)">
+          Maharashtra
+          <span class="accordion-icon">▼</span>
+        </button>
+        <div class="accordion-content">
+          <ul class="uni-list">
+            <li class="uni-item">University of Mumbai</li>
+            <li class="uni-item">Savitribai Phule Pune University</li>
+            <li class="uni-item">NMIMS (Narsee Monjee Institute of Management Studies)</li>
+            <li class="uni-item">Symbiosis International University</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <button class="accordion-btn" onclick="toggleAcc(this)">
+          Karnataka
+          <span class="accordion-icon">▼</span>
+        </button>
+        <div class="accordion-content">
+          <ul class="uni-list">
+            <li class="uni-item">Visvesvaraya Technological University (VTU)</li>
+            <li class="uni-item">Bangalore University</li>
+            <li class="uni-item">Manipal Academy of Higher Education (MAHE)</li>
+            <li class="uni-item">Christ University</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <button class="accordion-btn" onclick="toggleAcc(this)">
+          Delhi / NCR
+          <span class="accordion-icon">▼</span>
+        </button>
+        <div class="accordion-content">
+          <ul class="uni-list">
+            <li class="uni-item">University of Delhi (DU)</li>
+            <li class="uni-item">Guru Gobind Singh Indraprastha University (GGSIPU)</li>
+            <li class="uni-item">Amity University</li>
+            <li class="uni-item">Delhi Technological University (DTU)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="accordion">
+        <button class="accordion-btn" onclick="toggleAcc(this)">
+          Tamil Nadu
+          <span class="accordion-icon">▼</span>
+        </button>
+        <div class="accordion-content">
+          <ul class="uni-list">
+            <li class="uni-item">Anna University</li>
+            <li class="uni-item">University of Madras</li>
+            <li class="uni-item">VIT (Vellore Institute of Technology)</li>
+            <li class="uni-item">SRM Institute of Science and Technology</li>
+          </ul>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <div class="download-wrap">
+    <a href="/surrey-requirements-2026.pdf" target="_blank" download="surrey-requirements-2026.pdf" class="download-btn">
+      📄 Download Full PDF
+    </a>
+    <div style="color:var(--dim);font-size:13px;margin-top:16px;">
+      Requires <b>surrey-requirements-2026.pdf</b> to be placed in the <code>public/</code> folder to work.
+    </div>
+  </div>
+
+</div>
+
+<script>
+function toggleAcc(btn) {
+  const acc = btn.parentElement;
+  acc.classList.toggle('active');
+}
+
+function filterMOI() {
+  const q = document.getElementById('moiSearch').value.toLowerCase();
+  const accordions = document.querySelectorAll('.accordion');
+
+  accordions.forEach(acc => {
+    const stateName = acc.querySelector('.accordion-btn').textContent.toLowerCase();
+    const items = acc.querySelectorAll('.uni-item');
+    let hasMatch = false;
+
+    // Check state match
+    if (stateName.includes(q)) {
+      hasMatch = true;
+      items.forEach(i => i.classList.remove('hidden'));
+    } else {
+      // Check individual uni match
+      items.forEach(item => {
+        if (item.textContent.toLowerCase().includes(q)) {
+          item.classList.remove('hidden');
+          hasMatch = true;
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    }
+
+    if (hasMatch) {
+      acc.style.display = 'block';
+      if (q !== '') acc.classList.add('active'); // Expand if searching
+    } else {
+      acc.style.display = 'none';
+      if (q === '') acc.classList.remove('active');
+    }
+    
+    // reset to collapsed when clearing search
+    if (q === '') {
+      acc.classList.remove('active');
+    }
+  });
+}
+</script>
+</body>
+</html>

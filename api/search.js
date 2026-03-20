@@ -42,14 +42,14 @@ Return ONLY valid JSON — no markdown fences, no explanation, no preamble.
   },
 
   "intakes": {
-    "available": ["September 2025", "January 2026"],
+    "available": ["September 2026", "February 2027"],
     "main_intake": "September",
-    "application_open": "October 1 (for Sep intake)",
+    "application_open": "October 2025 (for Sep 2026 intake)",
     "deadlines_by_intake": [
-      { "intake": "September 2025", "deadline": "January 31 2025 (Early), May 31 2025 (Final)" },
-      { "intake": "January 2026", "deadline": "September 30 2025" }
+      { "intake": "September 2026", "deadline": "January 31 2026 (Early), May 31 2026 (Final)" },
+      { "intake": "February 2027", "deadline": "September 30 2026" }
     ],
-    "early_application_discount": "2000 GBP tuition discount if applied before Dec 1 or No discount"
+    "early_application_discount": "e.g. 2000 GBP tuition discount if applied before Dec 1 or No discount"
   },
 
   "tuition_fees": {
@@ -69,7 +69,7 @@ Return ONLY valid JSON — no markdown fences, no explanation, no preamble.
     "undergrad_indian_cgpa": "8.5+/10 CGPA or 85%+ in Class 12",
     "postgrad_gpa": "First Class or 2:1 Honours",
     "postgrad_indian_cgpa": "6.5+/10 CGPA or 65%+ aggregate",
-    "backlogs_allowed": "0 active backlogs (history considered case by case) or Up to 5 total backlogs or No official policy — assessed case by case",
+    "backlogs_allowed": "State the exact published policy for this specific university. For University of Surrey: up to 50 total backlogs accepted. For ALL other universities: state the exact published policy or No official policy — assessed case by case. NEVER apply Surrey's 50-backlog rule to any other university.",
     "interview_required": "Yes or No or Sometimes (shortlisted only)",
     "interview_format": "Panel interview 20-30 min or Video via HireVue or Not required",
     "english_ielts": "6.5 overall, no band below 6.0",
@@ -114,20 +114,20 @@ Return ONLY valid JSON — no markdown fences, no explanation, no preamble.
 
   "courses": {
     "undergraduate": [
-      { "name": "BSc Computer Science", "duration": "3 years", "intake": "September", "deadline": "January 31" },
-      { "name": "BEng Mechanical Engineering", "duration": "4 years", "intake": "September", "deadline": "January 31" },
-      { "name": "BPharm Pharmacy", "duration": "4 years", "intake": "September", "deadline": "March 31" },
-      { "name": "MBBS Medicine", "duration": "5 years", "intake": "September", "deadline": "October 15 (UCAS)" },
-      { "name": "BDS Dentistry", "duration": "5 years", "intake": "September", "deadline": "October 15 (UCAS)" },
-      { "name": "BA Business Management", "duration": "3 years", "intake": "September/January", "deadline": "Rolling" }
+      { "name": "BSc Computer Science", "duration": "3 years", "intake": "September 2026", "deadline": "January 31 2026" },
+      { "name": "BEng Mechanical Engineering", "duration": "4 years", "intake": "September 2026", "deadline": "January 31 2026" },
+      { "name": "BPharm Pharmacy", "duration": "4 years", "intake": "September 2026", "deadline": "March 31 2026" },
+      { "name": "MBBS Medicine", "duration": "5 years", "intake": "September 2026", "deadline": "October 15 2025 (UCAS)" },
+      { "name": "BDS Dentistry", "duration": "5 years", "intake": "September 2026", "deadline": "October 15 2025 (UCAS)" },
+      { "name": "BA Business Management", "duration": "3 years", "intake": "September 2026 / February 2027", "deadline": "Rolling" }
     ],
     "postgraduate": [
-      { "name": "MSc Data Science", "duration": "1 year", "intake": "September", "deadline": "June 30" },
-      { "name": "MBA", "duration": "1-2 years", "intake": "September/January", "deadline": "May 31 / Oct 31" },
-      { "name": "MSc Pharmaceutical Science", "duration": "1 year", "intake": "September", "deadline": "June 30" },
-      { "name": "MSc Artificial Intelligence", "duration": "1 year", "intake": "September", "deadline": "May 31" },
-      { "name": "LLM International Law", "duration": "1 year", "intake": "September", "deadline": "June 30" },
-      { "name": "MSc Nursing", "duration": "1 year", "intake": "September", "deadline": "April 30" }
+      { "name": "MSc Data Science", "duration": "1 year", "intake": "September 2026", "deadline": "June 30 2026" },
+      { "name": "MBA", "duration": "1-2 years", "intake": "September 2026 / February 2027", "deadline": "May 31 2026 / Oct 31 2026" },
+      { "name": "MSc Pharmaceutical Science", "duration": "1 year", "intake": "September 2026", "deadline": "June 30 2026" },
+      { "name": "MSc Artificial Intelligence", "duration": "1 year", "intake": "September 2026", "deadline": "May 31 2026" },
+      { "name": "LLM International Law", "duration": "1 year", "intake": "September 2026", "deadline": "June 30 2026" },
+      { "name": "MSc Nursing", "duration": "1 year", "intake": "September 2026", "deadline": "April 30 2026" }
     ],
     "phd": [
       { "name": "PhD Computer Science", "duration": "3-4 years", "intake": "Rolling", "deadline": "Rolling" },
@@ -153,12 +153,13 @@ Return ONLY valid JSON — no markdown fences, no explanation, no preamble.
 }
 
 CRITICAL RULES:
-1. SCHOLARSHIPS — List ALL: Chevening, Commonwealth, GREAT, DAAD, Endeavour, university merit, departmental, sports, need-based. Minimum 6-10 scholarships. Never stop at 2-3.
-2. LOANS — ALWAYS include these Indian banks: SBI Scholar Loan, HDFC Credila, Axis Bank Education Loan, Avanse Financial Services, ICICI Bank Education Loan, Canara Bank Vidya Turant, Bank of Baroda Baroda Scholar, Union Bank of India, IDFC First Bank. Plus international: Prodigy Finance, MPOWER Financing if applicable.
-3. COURSES — Include all faculties: Engineering, Business, Law, Medicine, Dentistry, Pharmacy, Nursing, Arts, Sciences, Architecture. Minimum 6 UG and 6 PG.
-4. BACKLOGS — State exact policy if published. If not, say "No official policy — assessed case by case."
-5. IELTS WAIVER — Many UK/Australian/Irish universities waive for Indian English-medium students. State clearly.
-6. UCAS — Only for UK undergraduate. PG in UK = direct application. Non-UK = Not applicable.`;
+1. INTAKES — Always use September 2026 as main intake and February 2027 as second intake. Never use 2025 dates.
+2. BACKLOGS — For University of Surrey specifically: up to 50 total backlogs accepted. For ALL other universities: state the exact published policy or "No official policy — assessed case by case." NEVER apply the 50-backlog rule to any other university.
+3. SCHOLARSHIPS — List ALL: Chevening, Commonwealth, GREAT, DAAD, Endeavour, university merit, departmental, sports, need-based. Minimum 6-10. Never stop at 2-3.
+4. LOANS — ALWAYS include: SBI Scholar Loan, HDFC Credila, Axis Bank Education Loan, Avanse Financial Services, ICICI Bank Education Loan, Canara Bank Vidya Turant, Bank of Baroda Baroda Scholar, Union Bank of India, IDFC First Bank. Plus Prodigy Finance, MPOWER if applicable.
+5. COURSES — Include Engineering, Business, Law, Medicine, Dentistry, Pharmacy, Nursing, Arts, Sciences, Architecture. Min 6 UG and 6 PG.
+6. IELTS WAIVER — Many UK/Australian/Irish universities waive for Indian English-medium students. State clearly.
+7. UCAS — Only UK undergraduate. PG UK = direct. Non-UK = Not applicable.`;
 
   try {
     const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
