@@ -24,8 +24,8 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Please enter a university name' });
   }
 
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-  if (!GEMINI_API_KEY) {
+  const GROQ_API_KEY = process.env.GROQ_API_KEY;
+  if (!GROQ_API_KEY) {
     return res.status(500).json({ error: 'Server not configured. Contact admin.' });
   }
 
@@ -112,33 +112,38 @@ Return ONLY valid JSON — no markdown fences, no explanation, no preamble.
 }`;
 
   try {
-    const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.2,
-            maxOutputTokens: 2500,
-            responseMimeType: "application/json"
+    const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GROQ_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        temperature: 0.2,
+        max_tokens: 2500,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a university information expert. Always respond with valid JSON only — no markdown fences, no explanation, no preamble.'
+          },
+          {
+            role: 'user',
+            content: prompt
           }
-        })
-      }
-    );
+        ]
+      })
+    });
 
-    if (!geminiRes.ok) {
-      const errData = await geminiRes.json();
-      const geminiMsg = errData?.error?.message || JSON.stringify(errData);
-      console.error('Gemini API error:', geminiMsg);
-      return res.status(502).json({ error: `AI service error: ${geminiMsg}` });
+    if (!groqRes.ok) {
+      const errData = await groqRes.json();
+      console.error('Groq API error:', errData);
+      return res.status(502).json({ error: 'AI service error. Please try again.' });
     }
 
-    const geminiData = await geminiRes.json();
-    const rawText = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const groqData = await groqRes.json();
+    const rawText = groqData?.choices?.[0]?.message?.content || '';
 
-    // Clean up any accidental markdown fences
     const cleaned = rawText
       .replace(/^```json\s*/i, '')
       .replace(/^```\s*/i, '')
@@ -146,7 +151,7 @@ Return ONLY valid JSON — no markdown fences, no explanation, no preamble.
       .trim();
 
     const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('Could not parse AI response as JSON');
+    if (!jsonMatch) throw new Error('Could not parse AI response');
 
     const uniData = JSON.parse(jsonMatch[0]);
     return res.status(200).json(uniData);
@@ -154,7 +159,8 @@ Return ONLY valid JSON — no markdown fences, no explanation, no preamble.
   } catch (err) {
     console.error('Search handler error:', err.message);
     return res.status(500).json({
-      error: 'Failed to fetch university data. Please try again in a moment.'
+      error: 'Failed to fetch university data. Please try again.'
     });
   }
 }
+
