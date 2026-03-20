@@ -1,0 +1,6 @@
+{
+  "name": "uniscope",
+  "version": "1.0.0",
+  "description": "University Intelligence Platform",
+  "engines": { "node": "18.x" }
+}

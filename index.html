@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniScope — University Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c12;
+    --surface: #12151f;
+    --surface2: #1a1e2e;
+    --border: #252a3d;
+    --accent: #4f8ef7;
+    --accent2: #7c5af7;
+    --gold: #f0c060;
+    --green: #34d399;
+    --red: #f87171;
+    --text: #e8eaf6;
+    --muted: #6b7280;
+    --dim: #9ca3af;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0;
+    background-image: linear-gradient(rgba(79,142,247,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,142,247,0.04) 1px, transparent 1px);
+    background-size: 40px 40px; pointer-events: none;
+  }
+  .bg-glow {
+    position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 400px;
+    background: radial-gradient(ellipse, rgba(79,142,247,0.12) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* PASSWORD GATE */
+  #gate {
+    position: fixed; inset: 0; z-index: 100;
+    background: var(--bg); display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .gate-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 24px; padding: 48px 40px; width: 100%; max-width: 420px;
+    text-align: center; animation: fadeUp .4s ease;
+  }
+  .gate-icon { font-size: 48px; margin-bottom: 16px; }
+  .gate-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .gate-sub { color: var(--muted); font-size: 14px; margin-bottom: 28px; line-height: 1.6; }
+  .gate-input {
+    width: 100%; background: var(--surface2); border: 1.5px solid var(--border);
+    border-radius: 12px; padding: 14px 18px; font-family: 'DM Sans', sans-serif;
+    font-size: 16px; color: var(--text); outline: none; margin-bottom: 14px;
+    text-align: center; letter-spacing: 0.15em; transition: border-color .2s;
+  }
+  .gate-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,142,247,0.15); }
+  .gate-btn {
+    width: 100%; background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none; border-radius: 12px; padding: 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 600;
+    color: #fff; cursor: pointer; transition: opacity .2s, transform .1s;
+  }
+  .gate-btn:hover { opacity: .9; transform: scale(1.01); }
+  .gate-btn:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+  .gate-error { color: var(--red); font-size: 13px; margin-top: 12px; min-height: 20px; }
+
+  /* MAIN APP */
+  #app { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 48px 24px 80px; display: none; }
+
+  /* LOGOUT */
+  .logout-btn {
+    position: fixed; top: 16px; right: 16px; z-index: 50;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 14px; font-size: 12px; color: var(--muted);
+    cursor: pointer; transition: all .15s; display: none;
+  }
+  .logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+  header { text-align: center; margin-bottom: 52px; }
+  .logo-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.25);
+    border-radius: 100px; padding: 6px 16px; margin-bottom: 24px;
+    font-size: 12px; font-weight: 500; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .logo-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.4)} }
+  h1 {
+    font-family: 'Playfair Display', serif; font-size: clamp(38px,6vw,64px); font-weight: 900; line-height: 1.05;
+    background: linear-gradient(135deg, #fff 0%, #a8b8ff 50%, var(--accent) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 14px;
+  }
+  .subtitle { color: var(--muted); font-size: 16px; max-width: 480px; margin: 0 auto; line-height: 1.6; }
+
+  .search-wrap { position: relative; margin-bottom: 16px; }
+  .search-box {
+    width: 100%; background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 16px; padding: 18px 160px 18px 56px;
+    font-family: 'DM Sans', sans-serif; font-size: 17px; color: var(--text);
+    transition: border-color .2s, box-shadow .2s; outline: none;
+  }
+  .search-box::placeholder { color: var(--muted); }
+  .search-box:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,142,247,0.15); }
+  .search-icon { position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 20px; pointer-events: none; }
+  .search-btn {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none; border-radius: 10px; padding: 10px 22px;
+    color: #fff; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: opacity .2s, transform .1s; white-space: nowrap;
+  }
+  .search-btn:hover { opacity:.9; transform: translateY(-50%) scale(1.02); }
+  .search-btn:disabled { opacity:.5; cursor:not-allowed; transform: translateY(-50%); }
+
+  .quick-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 40px; }
+  .tag {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 100px;
+    padding: 6px 14px; font-size: 12px; color: var(--dim); cursor: pointer; transition: all .15s;
+  }
+  .tag:hover { border-color: var(--accent); color: var(--accent); background: rgba(79,142,247,0.08); }
+
+  .loading { display: none; text-align: center; padding: 60px 20px; }
+  .loading.show { display: block; }
+  .spinner { width: 48px; height: 48px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 20px; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .loading-text { color: var(--muted); font-size: 14px; }
+  .loading-uni { color: var(--accent); font-weight: 600; }
+
+  .results { display: none; animation: fadeUp .4s ease; }
+  .results.show { display: block; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+  .error-box {
+    display: none; background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.25);
+    border-radius: 12px; padding: 20px; color: var(--red); text-align: center; margin-top: 12px;
+  }
+  .error-box.show { display: block; }
+
+  .empty-state { text-align: center; padding: 60px 20px; }
+  .empty-icon { font-size: 48px; margin-bottom: 16px; opacity:.4; }
+  .empty-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--dim); margin-bottom: 8px; }
+  .empty-sub { color: var(--muted); font-size: 14px; }
+
+  .uni-header {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+    padding: 28px 32px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 20px;
+  }
+  .uni-avatar {
+    width: 64px; height: 64px; border-radius: 14px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: #fff;
+  }
+  .uni-name { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+  .uni-meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+  .meta-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 100px;
+    padding: 4px 12px; font-size: 12px; font-weight: 500;
+  }
+  .meta-pill.blue { border-color: rgba(79,142,247,0.4); color: var(--accent); }
+  .meta-pill.green { border-color: rgba(52,211,153,0.4); color: var(--green); }
+
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px,1fr)); gap: 16px; margin-bottom: 16px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; transition: border-color .2s; }
+  .card:hover { border-color: rgba(79,142,247,0.3); }
+  .card-title { display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+  .card-full { grid-column: 1/-1; }
+
+  .rank-number { font-family: 'Playfair Display', serif; font-size: 52px; font-weight: 900; background: linear-gradient(135deg, var(--gold), #ff8c42); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; margin-bottom: 4px; }
+  .rank-label { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+  .rank-badges { display: flex; flex-wrap: wrap; gap: 8px; }
+  .rank-badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font-size: 12px; }
+  .rank-badge span { color: var(--muted); } .rank-badge b { color: var(--text); }
+
+  .fee-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .fee-row:last-child { border-bottom: none; }
+  .fee-label { font-size: 13px; color: var(--dim); }
+  .fee-value { font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500; color: var(--text); }
+
+  .req-item { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+  .req-item:last-child { border-bottom: none; }
+  .req-key { color: var(--dim); flex-shrink: 0; margin-right: 12px; }
+  .req-val { color: var(--text); font-weight: 500; text-align: right; }
+
+  .schol-item { padding: 14px; background: var(--surface2); border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border); }
+  .schol-item:last-child { margin-bottom: 0; }
+  .schol-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .schol-detail { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .schol-amount { display: inline-block; margin-top: 8px; background: rgba(52,211,153,0.1); border: 1px solid rgba(52,211,153,0.25); color: var(--green); border-radius: 6px; padding: 3px 10px; font-size: 12px; font-weight: 600; font-family: 'DM Mono', monospace; }
+
+  .loan-item { display: flex; align-items: flex-start; gap: 12px; padding: 14px; background: var(--surface2); border-radius: 10px; margin-bottom: 10px; border: 1px solid var(--border); }
+  .loan-item:last-child { margin-bottom: 0; }
+  .loan-logo { width: 38px; height: 38px; border-radius: 8px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; font-family: 'DM Mono', monospace; }
+  .loan-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .loan-detail { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .loan-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .loan-tag { background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.25); color: var(--accent); border-radius: 5px; padding: 2px 8px; font-size: 11px; font-weight: 500; }
+
+  .notables { display: flex; flex-wrap: wrap; gap: 8px; }
+  .notable-tag { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 12px; font-size: 12px; color: var(--dim); }
+  .courses-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .course-chip { background: rgba(124,90,247,0.1); border: 1px solid rgba(124,90,247,0.25); color: #b39dff; border-radius: 8px; padding: 5px 12px; font-size: 12px; font-weight: 500; }
+
+  @media(max-width:600px) {
+    .uni-header { flex-direction: column; }
+    .info-grid { grid-template-columns: 1fr; }
+    .gate-card { padding: 32px 20px; }
+    .search-box { padding-right: 100px; font-size: 15px; }
+    .search-btn { padding: 10px 14px; font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- PASSWORD GATE -->
+<div id="gate">
+  <div class="gate-card">
+    <div class="gate-icon">🎓</div>
+    <div class="gate-title">UniScope</div>
+    <div class="gate-sub">Internal Team Tool<br>Enter your team password to continue.</div>
+    <input class="gate-input" id="pwInput" type="password" placeholder="Team password" autocomplete="current-password" />
+    <button class="gate-btn" id="gateBtn" onclick="checkPassword()">Enter UniScope →</button>
+    <div class="gate-error" id="gateError"></div>
+  </div>
+</div>
+
+<button class="logout-btn" id="logoutBtn" onclick="logout()">🚪 Logout</button>
+
+<!-- MAIN APP -->
+<div id="app">
+  <header>
+    <div class="logo-badge"><div class="logo-dot"></div> AI-Powered · Free · Team Only</div>
+    <h1>UniScope</h1>
+    <p class="subtitle">Search any university worldwide — rankings, fees, loans, scholarships & requirements, instantly.</p>
+  </header>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-box" id="searchInput" type="text" placeholder="e.g. University of Oxford, MIT, IIT Bombay, McGill..." autocomplete="off" />
+    <button class="search-btn" id="searchBtn" onclick="doSearch()">Search →</button>
+  </div>
+
+  <div class="quick-tags">
+    <div class="tag" onclick="quickSearch('University of Oxford')">Oxford</div>
+    <div class="tag" onclick="quickSearch('MIT')">MIT</div>
+    <div class="tag" onclick="quickSearch('Harvard University')">Harvard</div>
+    <div class="tag" onclick="quickSearch('University of Toronto')">U of Toronto</div>
+    <div class="tag" onclick="quickSearch('Imperial College London')">Imperial</div>
+    <div class="tag" onclick="quickSearch('National University of Singapore')">NUS</div>
+    <div class="tag" onclick="quickSearch('University of Melbourne')">Melbourne</div>
+    <div class="tag" onclick="quickSearch('Trinity College Dublin')">Trinity Dublin</div>
+    <div class="tag" onclick="quickSearch('McGill University')">McGill</div>
+    <div class="tag" onclick="quickSearch('University of Edinburgh')">Edinburgh</div>
+    <div class="tag" onclick="quickSearch('RMIT University')">RMIT</div>
+    <div class="tag" onclick="quickSearch('University College Dublin')">UCD</div>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div class="loading-text">Researching <span class="loading-uni" id="loadingUni"></span>...</div>
+  </div>
+
+  <div class="error-box" id="errorBox">⚠️ <span id="errorMsg"></span></div>
+
+  <div class="results" id="results"></div>
+
+  <div class="empty-state" id="emptyState">
+    <div class="empty-icon">🌍</div>
+    <div class="empty-title">Search any university in the world</div>
+    <div class="empty-sub">Rankings · Fees · Scholarships · Loan Providers · Admission Requirements</div>
+  </div>
+</div>
+
+<script>
+const STORED_KEY = 'uniscope_auth';
+
+// Auto-unlock if already authenticated this session
+if (sessionStorage.getItem(STORED_KEY) === 'true') unlockApp();
+
+document.getElementById('pwInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkPassword();
+});
+
+async function checkPassword() {
+  const pw = document.getElementById('pwInput').value.trim();
+  const err = document.getElementById('gateError');
+  const btn = document.getElementById('gateBtn');
+
+  if (!pw) { err.textContent = 'Please enter the password.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Checking...';
+  err.textContent = '';
+
+  try {
+    const r = await fetch('/api/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ university: 'ping', password: pw })
+    });
+
+    if (r.status === 401) {
+      err.textContent = '❌ Wrong password. Please try again.';
+    } else {
+      sessionStorage.setItem(STORED_KEY, 'true');
+      sessionStorage.setItem('uniscope_pw', pw);
+      unlockApp();
+    }
+  } catch {
+    // Network issue — let them in anyway for offline testing
+    sessionStorage.setItem(STORED_KEY, 'true');
+    sessionStorage.setItem('uniscope_pw', pw);
+    unlockApp();
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Enter UniScope →';
+  }
+}
+
+function unlockApp() {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('logoutBtn').style.display = 'block';
+}
+
+function logout() {
+  sessionStorage.clear();
+  location.reload();
+}
+
+// ── SEARCH ─────────────────────────────────────────────────────────────────────
+const $id = id => document.getElementById(id);
+
+$id('searchInput').addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+
+function quickSearch(name) { $id('searchInput').value = name; doSearch(); }
+
+function hideAll() {
+  $id('loading').classList.remove('show');
+  $id('results').classList.remove('show');
+  $id('errorBox').classList.remove('show');
+  $id('emptyState').style.display = 'none';
+}
+
+async function doSearch() {
+  const query = $id('searchInput').value.trim();
+  if (!query) return;
+
+  hideAll();
+  $id('loading').classList.add('show');
+  $id('loadingUni').textContent = query;
+  $id('searchBtn').disabled = true;
+  $id('results').innerHTML = '';
+
+  try {
+    const resp = await fetch('/api/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        university: query,
+        password: sessionStorage.getItem('uniscope_pw') || ''
+      })
+    });
+
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Request failed');
+
+    $id('loading').classList.remove('show');
+    $id('results').classList.add('show');
+    renderResults(data);
+
+  } catch (err) {
+    $id('loading').classList.remove('show');
+    $id('errorBox').classList.add('show');
+    $id('errorMsg').textContent = err.message || 'Could not load data. Please try again.';
+  } finally {
+    $id('searchBtn').disabled = false;
+  }
+}
+
+// ── RENDER ──────────────────────────────────────────────────────────────────────
+function v(val, fallback = '—') {
+  return (val && val !== 'N/A' && val !== 'Not Ranked') ? val : fallback;
+}
+
+function renderResults(u) {
+  const initials = (u.university_name || 'U')
+    .split(' ').filter(w => w.length > 2).slice(0, 2)
+    .map(w => w[0]).join('').toUpperCase() || 'U';
+
+  const f = u.tuition_fees || {};
+  const r = u.admission_requirements || {};
+  const rk = u.rankings || {};
+
+  const rankBadges = [
+    rk.qs_world    && rk.qs_world !== 'Not Ranked'    && `<div class="rank-badge"><span>QS </span><b>${rk.qs_world}</b></div>`,
+    rk.times_world && rk.times_world !== 'Not Ranked' && `<div class="rank-badge"><span>THE </span><b>${rk.times_world}</b></div>`,
+    rk.us_news     && rk.us_news !== 'Not Ranked'     && `<div class="rank-badge"><span>US News </span><b>${rk.us_news}</b></div>`,
+    rk.national_rank && `<div class="rank-badge"><span>National </span><b>${rk.national_rank}</b></div>`,
+  ].filter(Boolean).join('');
+
+  const subjectHTML = (rk.subject_strengths || []).map(s =>
+    `<div class="notable-tag">🏆 ${s}</div>`).join('');
+
+  const scholHTML = (u.scholarships || []).map(s => `
+    <div class="schol-item">
+      <div class="schol-name">🎓 ${s.name}</div>
+      <div class="schol-detail">${s.eligibility}</div>
+      <div><span class="schol-amount">${s.amount}</span></div>
+      ${s.renewable ? '<div style="font-size:11px;color:var(--muted);margin-top:6px">🔄 Renewable</div>' : ''}
+    </div>`).join('') || '<p style="color:var(--muted);font-size:13px">No scholarship data available.</p>';
+
+  const loanHTML = (u.loan_providers || []).map(l => `
+    <div class="loan-item">
+      <div class="loan-logo">${(l.name||'').substring(0,2).toUpperCase()}</div>
+      <div style="flex:1">
+        <div class="loan-name">${l.name}</div>
+        <div class="loan-detail">${l.notes}</div>
+        <div class="loan-tags">
+          <span class="loan-tag">📊 ${l.coverage}</span>
+          <span class="loan-tag">💰 ${l.interest}</span>
+          <span class="loan-tag">${l.type}</span>
+        </div>
+      </div>
+    </div>`).join('') || '<p style="color:var(--muted);font-size:13px">No loan provider data available.</p>';
+
+  const courseChips = (u.popular_courses || []).map(c =>
+    `<div class="course-chip">${c}</div>`).join('');
+
+  const alumniHTML = (u.notable_alumni || []).map(a =>
+    `<div class="notable-tag">⭐ ${a}</div>`).join('');
+
+  const accredHTML = (u.accreditations || []).map(a =>
+    `<div class="notable-tag">✅ ${a}</div>`).join('');
+
+  $id('results').innerHTML = `
+    <div class="uni-header">
+      <div class="uni-avatar">${initials}</div>
+      <div style="flex:1;min-width:0">
+        <div class="uni-name">${v(u.university_name, 'University')}</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:3px">${v(u.tagline, '')}</div>
+        <div class="uni-meta">
+          ${u.city  ? `<div class="meta-pill blue">📍 ${u.city}, ${u.country}</div>` : ''}
+          ${u.type  ? `<div class="meta-pill">🏛 ${u.type}</div>` : ''}
+          ${u.established ? `<div class="meta-pill">📅 Est. ${u.established}</div>` : ''}
+          ${u.student_population ? `<div class="meta-pill green">👥 ${u.student_population}</div>` : ''}
+        </div>
+      </div>
+    </div>
+
+    <div class="info-grid">
+      <div class="card">
+        <div class="card-title">🏆 World Rankings</div>
+        <div class="rank-number">${v(rk.qs_world, '—')}</div>
+        <div class="rank-label">QS World University Ranking 2025</div>
+        <div class="rank-badges">${rankBadges || '<span style="color:var(--muted);font-size:12px">Not in major rankings</span>'}</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💰 Tuition Fees (${v(f.currency, '')})</div>
+        <div class="fee-row"><span class="fee-label">UG — Domestic</span><span class="fee-value">${v(f.undergrad_domestic)}</span></div>
+        <div class="fee-row"><span class="fee-label">UG — International</span><span class="fee-value">${v(f.undergrad_international)}</span></div>
+        <div class="fee-row"><span class="fee-label">PG — Domestic</span><span class="fee-value">${v(f.postgrad_domestic)}</span></div>
+        <div class="fee-row"><span class="fee-label">PG — International</span><span class="fee-value">${v(f.postgrad_international)}</span></div>
+        ${f.mba && f.mba !== 'N/A' ? `<div class="fee-row"><span class="fee-label">MBA</span><span class="fee-value">${f.mba}</span></div>` : ''}
+        <div class="fee-row" style="border:none"><span class="fee-label">🏠 Living Costs/yr</span><span class="fee-value" style="color:var(--muted)">${v(f.living_costs)}</span></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Admission Requirements</div>
+        <div class="req-item"><span class="req-key">UG GPA / Grades</span><span class="req-val">${v(r.undergrad_gpa)}</span></div>
+        <div class="req-item"><span class="req-key">PG GPA</span><span class="req-val">${v(r.postgrad_gpa)}</span></div>
+        <div class="req-item"><span class="req-key">IELTS</span><span class="req-val">${v(r.english_ielts)}</span></div>
+        <div class="req-item"><span class="req-key">TOEFL</span><span class="req-val">${v(r.english_toefl)}</span></div>
+        <div class="req-item"><span class="req-key">GRE / GMAT</span><span class="req-val">${v(r.gre_gmat)}</span></div>
+        <div class="req-item"><span class="req-key">Work Exp (PG)</span><span class="req-val">${v(r.work_exp_pg)}</span></div>
+        <div class="req-item"><span class="req-key">Acceptance Rate</span><span class="req-val">${v(r.acceptance_rate)}</span></div>
+        <div class="req-item" style="border:none"><span class="req-key">Deadline</span><span class="req-val">${v(r.application_deadline)}</span></div>
+      </div>
+
+      <div class="card card-full">
+        <div class="card-title">🎓 Scholarships & Funding</div>
+        ${scholHTML}
+      </div>
+
+      <div class="card card-full">
+        <div class="card-title">🏦 Student Loan Providers</div>
+        ${loanHTML}
+      </div>
+
+      <div class="card">
+        <div class="card-title">📚 Popular Courses</div>
+        <div class="courses-grid">${courseChips || '<span style="color:var(--muted);font-size:13px">—</span>'}</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⭐ Notable Alumni</div>
+        <div class="notables">${alumniHTML || '<span style="color:var(--muted);font-size:13px">—</span>'}</div>
+      </div>
+
+      ${subjectHTML ? `<div class="card"><div class="card-title">🔬 Subject Strengths</div><div class="notables">${subjectHTML}</div></div>` : ''}
+
+      <div class="card">
+        <div class="card-title">🏫 Campus & Research</div>
+        <div class="req-item"><span class="req-key">Campus</span><span class="req-val">${v(u.campus_size)}</span></div>
+        <div class="req-item" style="${accredHTML ? '' : 'border:none'}"><span class="req-key">Research</span><span class="req-val">${v(u.research_output)}</span></div>
+        ${accredHTML ? `<div class="req-item" style="border:none;display:block;padding-top:10px"><div style="color:var(--dim);font-size:12px;margin-bottom:8px">Accreditations</div><div class="notables">${accredHTML}</div></div>` : ''}
+        ${u.website ? `<div style="margin-top:16px"><a href="${u.website}" target="_blank" rel="noopener" style="color:var(--accent);font-size:13px;text-decoration:none">🌐 Official Website ↗</a></div>` : ''}
+      </div>
+    </div>`;
+}
+</script>
+</body>
+</html>
