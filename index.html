@@ -429,215 +429,215 @@ function renderResults(u) {
   const support = u.student_support || {};
   const courses = u.courses || {};
 
-  const header = \`
+  const header = `
     <div class="uni-header">
-      <div class="uni-avatar">\${initials}</div>
+      <div class="uni-avatar">${initials}</div>
       <div style="flex:1;min-width:0">
-        <div class="uni-name">\${v(u.university_name,'University')}</div>
-        <div style="font-size:13px;color:var(--dim);margin-top:3px">\${v(u.tagline,'')}</div>
+        <div class="uni-name">${v(u.university_name,'University')}</div>
+        <div style="font-size:13px;color:var(--dim);margin-top:3px">${v(u.tagline,'')}</div>
         <div class="uni-meta">
-          \${u.city ? \`<div class="meta-pill blue">📍 \${u.city}, \${u.country}</div>\` : ''}
-          \${u.type ? \`<div class="meta-pill">🏛 \${u.type}</div>\` : ''}
-          \${u.established ? \`<div class="meta-pill">📅 Est. \${u.established}</div>\` : ''}
-          \${u.student_population ? \`<div class="meta-pill green">👥 \${u.student_population}</div>\` : ''}
-          \${u.international_students_percent ? \`<div class="meta-pill">🌍 \${u.international_students_percent}</div>\` : ''}
-          \${u.indian_students_present ? \`<div class="meta-pill orange">🇮🇳 \${u.indian_students_present}</div>\` : ''}
+          ${u.city ? `<div class="meta-pill blue">📍 ${u.city}, ${u.country}</div>` : ''}
+          ${u.type ? `<div class="meta-pill">🏛 ${u.type}</div>` : ''}
+          ${u.established ? `<div class="meta-pill">📅 Est. ${u.established}</div>` : ''}
+          ${u.student_population ? `<div class="meta-pill green">👥 ${u.student_population}</div>` : ''}
+          ${u.international_students_percent ? `<div class="meta-pill">🌍 ${u.international_students_percent}</div>` : ''}
+          ${u.indian_students_present ? `<div class="meta-pill orange">🇮🇳 ${u.indian_students_present}</div>` : ''}
         </div>
       </div>
-    </div>\`;
+    </div>`;
 
   const rankBadges = [
-    rk.qs_world && rk.qs_world !== 'Not Ranked' && \`<div class="rank-badge"><span>QS </span><b>\${rk.qs_world}</b></div>\`,
-    rk.times_world && rk.times_world !== 'Not Ranked' && \`<div class="rank-badge"><span>THE </span><b>\${rk.times_world}</b></div>\`,
-    rk.us_news && rk.us_news !== 'Not Ranked' && \`<div class="rank-badge"><span>US News </span><b>\${rk.us_news}</b></div>\`,
-    rk.national_rank && \`<div class="rank-badge"><span>National </span><b>\${rk.national_rank}</b></div>\`,
+    rk.qs_world && rk.qs_world !== 'Not Ranked' && `<div class="rank-badge"><span>QS </span><b>${rk.qs_world}</b></div>`,
+    rk.times_world && rk.times_world !== 'Not Ranked' && `<div class="rank-badge"><span>THE </span><b>${rk.times_world}</b></div>`,
+    rk.us_news && rk.us_news !== 'Not Ranked' && `<div class="rank-badge"><span>US News </span><b>${rk.us_news}</b></div>`,
+    rk.national_rank && `<div class="rank-badge"><span>National </span><b>${rk.national_rank}</b></div>`,
   ].filter(Boolean).join('');
-  const subjHTML = (rk.subject_strengths||[]).map(s=>\`<div class="chip">🏆 \${s}</div>\`).join('');
+  const subjHTML = (rk.subject_strengths||[]).map(s=>`<div class="chip">🏆 ${s}</div>`).join('');
 
-  const rankCard = \`
+  const rankCard = `
     <div class="card">
       <div class="card-title">🏆 World Rankings</div>
-      <div class="rank-number">\${v(rk.qs_world,'—')}</div>
+      <div class="rank-number">${v(rk.qs_world,'—')}</div>
       <div class="rank-label">QS World University Ranking</div>
-      <div class="rank-badges">\${rankBadges || '<span style="color:var(--dim);font-size:12px">Not in major rankings</span>'}</div>
-      \${subjHTML ? \`<div class="tag-cloud" style="margin-top:12px">\${subjHTML}</div>\` : ''}
-    </div>\`;
+      <div class="rank-badges">${rankBadges || '<span style="color:var(--dim);font-size:12px">Not in major rankings</span>'}</div>
+      ${subjHTML ? `<div class="tag-cloud" style="margin-top:12px">${subjHTML}</div>` : ''}
+    </div>`;
 
-  const feesCard = \`
+  const feesCard = `
     <div class="card">
-      <div class="card-title">💰 Tuition Fees (\${v(f.currency,'')})</div>
-      <div class="fee-row"><span class="fee-label">UG — Domestic</span><span class="fee-value">\${v(f.undergrad_domestic)}</span></div>
-      <div class="fee-row"><span class="fee-label">UG — International</span><span class="fee-value">\${v(f.undergrad_international)}</span></div>
-      <div class="fee-row"><span class="fee-label">PG — Domestic</span><span class="fee-value">\${v(f.postgrad_domestic)}</span></div>
-      <div class="fee-row"><span class="fee-label">PG — International</span><span class="fee-value">\${v(f.postgrad_international)}</span></div>
-      \${f.mba && f.mba !== 'N/A' ? \`<div class="fee-row"><span class="fee-label">MBA</span><span class="fee-value">\${f.mba}</span></div>\` : ''}
-      <div class="fee-row"><span class="fee-label">🏠 Living Costs/yr</span><span class="fee-value" style="color:var(--dim)">\${v(f.living_costs)}</span></div>
-      <div class="fee-row" style="border:none"><span class="fee-label">Application Fee</span><span class="fee-value" style="color:var(--dim)">\${v(f.application_fee)}</span></div>
-      \${f.application_fee_waiver && !f.application_fee_waiver.toLowerCase().includes('no waiver') ? \`<div style="margin-top:10px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.25);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--green)">🎁 Fee Waiver: \${f.application_fee_waiver}</div>\` : (f.application_fee_waiver ? \`<div style="margin-top:10px;background:rgba(138,125,90,0.08);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--dim)">ℹ️ \${f.application_fee_waiver}</div>\` : '')}
-    </div>\`;
+      <div class="card-title">💰 Tuition Fees (${v(f.currency,'')})</div>
+      <div class="fee-row"><span class="fee-label">UG — Domestic</span><span class="fee-value">${v(f.undergrad_domestic)}</span></div>
+      <div class="fee-row"><span class="fee-label">UG — International</span><span class="fee-value">${v(f.undergrad_international)}</span></div>
+      <div class="fee-row"><span class="fee-label">PG — Domestic</span><span class="fee-value">${v(f.postgrad_domestic)}</span></div>
+      <div class="fee-row"><span class="fee-label">PG — International</span><span class="fee-value">${v(f.postgrad_international)}</span></div>
+      ${f.mba && f.mba !== 'N/A' ? `<div class="fee-row"><span class="fee-label">MBA</span><span class="fee-value">${f.mba}</span></div>` : ''}
+      <div class="fee-row"><span class="fee-label">🏠 Living Costs/yr</span><span class="fee-value" style="color:var(--dim)">${v(f.living_costs)}</span></div>
+      <div class="fee-row" style="border:none"><span class="fee-label">Application Fee</span><span class="fee-value" style="color:var(--dim)">${v(f.application_fee)}</span></div>
+      ${f.application_fee_waiver && !f.application_fee_waiver.toLowerCase().includes('no waiver') ? `<div style="margin-top:10px;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.25);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--green)">🎁 Fee Waiver: ${f.application_fee_waiver}</div>` : (f.application_fee_waiver ? `<div style="margin-top:10px;background:rgba(138,125,90,0.08);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--dim)">ℹ️ ${f.application_fee_waiver}</div>` : '')}
+    </div>`;
 
-  const intakeChips = (intakes.available||[]).map(i=>\`<div class="intake-chip">📅 \${i}</div>\`).join('');
-  const deadlineRows = (intakes.deadlines_by_intake||[]).map(d=>\`
+  const intakeChips = (intakes.available||[]).map(i=>`<div class="intake-chip">📅 ${i}</div>`).join('');
+  const deadlineRows = (intakes.deadlines_by_intake||[]).map(d=>`
     <div class="deadline-row">
-      <span style="color:var(--dim)">\${d.intake}</span>
-      <span style="color:var(--gold);font-family:'DM Mono',monospace;font-size:12px;text-align:right">\${d.deadline}</span>
-    </div>\`).join('');
+      <span style="color:var(--dim)">${d.intake}</span>
+      <span style="color:var(--gold);font-family:'DM Mono',monospace;font-size:12px;text-align:right">${d.deadline}</span>
+    </div>`).join('');
   const earlyBadge = (intakes.early_application_discount && !intakes.early_application_discount.toLowerCase().includes('no discount'))
-    ? \`<div class="early-badge">🎁 Early Discount: \${intakes.early_application_discount}</div>\` : '';
+    ? `<div class="early-badge">🎁 Early Discount: ${intakes.early_application_discount}</div>` : '';
 
-  const intakesCard = \`
+  const intakesCard = `
     <div class="card">
       <div class="card-title">📅 Intakes & Deadlines</div>
-      \${earlyBadge}
-      <div class="intake-chips">\${intakeChips || '<span style="color:var(--dim);font-size:13px">—</span>'}</div>
-      \${intakes.application_open ? \`<div style="font-size:12px;color:var(--dim);margin-bottom:10px">Applications open: \${intakes.application_open}</div>\` : ''}
-      \${deadlineRows}
-    </div>\`;
+      ${earlyBadge}
+      <div class="intake-chips">${intakeChips || '<span style="color:var(--dim);font-size:13px">—</span>'}</div>
+      ${intakes.application_open ? `<div style="font-size:12px;color:var(--dim);margin-bottom:10px">Applications open: ${intakes.application_open}</div>` : ''}
+      ${deadlineRows}
+    </div>`;
 
   function reqRow(key, val) {
     const cls = yesNoClass(val);
-    return \`<div class="req-item"><span class="req-key">\${key}</span><span class="req-val \${cls}">\${v(val)}</span></div>\`;
+    return `<div class="req-item"><span class="req-key">${key}</span><span class="req-val ${cls}">${v(val)}</span></div>`;
   }
-  const admCard = \`
+  const admCard = `
     <div class="card card-full">
       <div class="card-title">📋 Admission Requirements</div>
       <div class="req-grid">
         <div>
-          \${reqRow('UG Grades', r.undergrad_gpa)}
-          \${reqRow('UG Indian CGPA', r.undergrad_indian_cgpa)}
-          \${reqRow('PG Grades', r.postgrad_gpa)}
-          \${reqRow('PG Indian CGPA', r.postgrad_indian_cgpa)}
-          \${reqRow('Backlogs Allowed', r.backlogs_allowed)}
-          \${reqRow('Interview', r.interview_required)}
-          \${reqRow('Interview Format', r.interview_format)}
-          \${reqRow('Work Exp (PG)', r.work_exp_pg)}
+          ${reqRow('UG Grades', r.undergrad_gpa)}
+          ${reqRow('UG Indian CGPA', r.undergrad_indian_cgpa)}
+          ${reqRow('PG Grades', r.postgrad_gpa)}
+          ${reqRow('PG Indian CGPA', r.postgrad_indian_cgpa)}
+          ${reqRow('Backlogs Allowed', r.backlogs_allowed)}
+          ${reqRow('Interview', r.interview_required)}
+          ${reqRow('Interview Format', r.interview_format)}
+          ${reqRow('Work Exp (PG)', r.work_exp_pg)}
         </div>
         <div>
-          \${reqRow('IELTS', r.english_ielts)}
-          \${reqRow('IELTS Waiver', r.ielts_waiver)}
-          \${reqRow('TOEFL', r.english_toefl)}
-          \${reqRow('PTE', r.english_pte)}
-          \${reqRow('Duolingo', r.english_duolingo)}
-          \${reqRow('GRE / GMAT', r.gre_gmat)}
-          \${r.dat && r.dat !== 'Not applicable' ? reqRow('DAT', r.dat) : ''}
-          \${reqRow('UCAS Required', r.ucas_required)}
-          \${r.ucas_code && r.ucas_code !== 'N/A' ? reqRow('UCAS Code', r.ucas_code) : ''}
-          \${reqRow('Acceptance Rate', r.acceptance_rate)}
+          ${reqRow('IELTS', r.english_ielts)}
+          ${reqRow('IELTS Waiver', r.ielts_waiver)}
+          ${reqRow('TOEFL', r.english_toefl)}
+          ${reqRow('PTE', r.english_pte)}
+          ${reqRow('Duolingo', r.english_duolingo)}
+          ${reqRow('GRE / GMAT', r.gre_gmat)}
+          ${r.dat && r.dat !== 'Not applicable' ? reqRow('DAT', r.dat) : ''}
+          ${reqRow('UCAS Required', r.ucas_required)}
+          ${r.ucas_code && r.ucas_code !== 'N/A' ? reqRow('UCAS Code', r.ucas_code) : ''}
+          ${reqRow('Acceptance Rate', r.acceptance_rate)}
         </div>
       </div>
-    </div>\`;
+    </div>`;
 
-  const scholHTML = (u.scholarships||[]).map(s => \`
+  const scholHTML = (u.scholarships||[]).map(s => `
     <div class="schol-item">
       <div class="schol-header">
-        <div class="schol-name">🎓 \${s.name}</div>
-        <span class="schol-amount">\${s.amount}</span>
+        <div class="schol-name">🎓 ${s.name}</div>
+        <span class="schol-amount">${s.amount}</span>
       </div>
-      <div class="schol-detail">\${s.eligibility}</div>
+      <div class="schol-detail">${s.eligibility}</div>
       <div class="schol-tags">
-        \${s.open_to_indian_students ? '<span class="schol-tag india">🇮🇳 Indian Students Eligible</span>' : ''}
-        \${s.renewable ? '<span class="schol-tag renew">🔄 Renewable</span>' : ''}
-        \${s.deadline ? \`<span class="schol-tag deadline">⏰ \${s.deadline}</span>\` : ''}
-        \${s.note ? \`<span class="schol-tag note">📌 \${s.note}</span>\` : ''}
+        ${s.open_to_indian_students ? '<span class="schol-tag india">🇮🇳 Indian Students Eligible</span>' : ''}
+        ${s.renewable ? '<span class="schol-tag renew">🔄 Renewable</span>' : ''}
+        ${s.deadline ? `<span class="schol-tag deadline">⏰ ${s.deadline}</span>` : ''}
+        ${s.note ? `<span class="schol-tag note">📌 ${s.note}</span>` : ''}
       </div>
-    </div>\`).join('') || '<p style="color:var(--dim);font-size:13px">No scholarship data available.</p>';
+    </div>`).join('') || '<p style="color:var(--dim);font-size:13px">No scholarship data available.</p>';
 
-  const scholCard = \`
+  const scholCard = `
     <div class="card card-full">
       <div class="card-title">🎓 Scholarships & Funding</div>
-      \${scholHTML}
-    </div>\`;
+      ${scholHTML}
+    </div>`;
 
   const loanHTML = (u.loan_providers||[]).map(l => {
     const isIndian = l.type && l.type.toLowerCase().includes('indian');
     const logo = (l.name||'').substring(0,3).toUpperCase();
-    return \`
+    return `
       <div class="loan-item">
-        <div class="loan-logo \${isIndian ? 'indian' : ''}">\${isIndian ? '🇮🇳' : logo}</div>
+        <div class="loan-logo ${isIndian ? 'indian' : ''}">${isIndian ? '🇮🇳' : logo}</div>
         <div style="flex:1">
-          <div class="loan-name">\${l.name}\${isIndian ? ' <span style="font-size:11px;color:var(--orange)">Indian Bank</span>' : ''}</div>
-          <div class="loan-detail">\${l.notes}</div>
+          <div class="loan-name">${l.name}${isIndian ? ' <span style="font-size:11px;color:var(--orange)">Indian Bank</span>' : ''}</div>
+          <div class="loan-detail">${l.notes}</div>
           <div class="loan-tags">
-            <span class="loan-tag">💰 \${l.coverage}</span>
-            <span class="loan-tag \${isIndian ? 'orange' : ''}">📈 \${l.interest_rate}</span>
-            <span class="loan-tag">🏦 \${l.type}</span>
-            \${l.collateral ? \`<span class="loan-tag">🔒 Collateral: \${l.collateral}</span>\` : ''}
-            \${l.cosigner_required ? \`<span class="loan-tag">👤 Co-signer: \${l.cosigner_required}</span>\` : ''}
-            \${l.processing_time ? \`<span class="loan-tag">⏱ \${l.processing_time}</span>\` : ''}
+            <span class="loan-tag">💰 ${l.coverage}</span>
+            <span class="loan-tag ${isIndian ? 'orange' : ''}">📈 ${l.interest_rate}</span>
+            <span class="loan-tag">🏦 ${l.type}</span>
+            ${l.collateral ? `<span class="loan-tag">🔒 Collateral: ${l.collateral}</span>` : ''}
+            ${l.cosigner_required ? `<span class="loan-tag">👤 Co-signer: ${l.cosigner_required}</span>` : ''}
+            ${l.processing_time ? `<span class="loan-tag">⏱ ${l.processing_time}</span>` : ''}
           </div>
         </div>
-      </div>\`;
+      </div>`;
   }).join('') || '<p style="color:var(--dim);font-size:13px">No loan provider data available.</p>';
 
-  const loanCard = \`
+  const loanCard = `
     <div class="card card-full">
       <div class="card-title">🏦 Student Loan Providers</div>
-      \${loanHTML}
-    </div>\`;
+      ${loanHTML}
+    </div>`;
 
   function courseTable(list) {
     if (!list || !list.length) return '<p style="color:var(--dim);font-size:13px">—</p>';
-    return \`<table class="course-table">
+    return `<table class="course-table">
       <thead><tr><th>Course</th><th>Duration</th><th>Intake</th><th>Deadline</th></tr></thead>
-      <tbody>\${list.map(c=>\`
+      <tbody>${list.map(c=>`
         <tr>
-          <td>\${c.name}</td>
-          <td>\${c.duration||'—'}</td>
-          <td>\${c.intake||'—'}</td>
-          <td>\${c.deadline||'—'}</td>
-        </tr>\`).join('')}
+          <td>${c.name}</td>
+          <td>${c.duration||'—'}</td>
+          <td>${c.intake||'—'}</td>
+          <td>${c.deadline||'—'}</td>
+        </tr>`).join('')}
       </tbody>
-    </table>\`;
+    </table>`;
   }
-  const coursesCard = \`
+  const coursesCard = `
     <div class="card card-full">
       <div class="card-title">📚 All Courses & Deadlines</div>
       <div class="courses-section">
-        \${courses.undergraduate && courses.undergraduate.length ? \`<div class="course-group"><div class="course-group-title">Undergraduate (UG)</div>\${courseTable(courses.undergraduate)}</div>\` : ''}
-        \${courses.postgraduate && courses.postgraduate.length ? \`<div class="course-group"><div class="course-group-title">Postgraduate (PG)</div>\${courseTable(courses.postgraduate)}</div>\` : ''}
-        \${courses.phd && courses.phd.length ? \`<div class="course-group"><div class="course-group-title">PhD / Research</div>\${courseTable(courses.phd)}</div>\` : ''}
+        ${courses.undergraduate && courses.undergraduate.length ? `<div class="course-group"><div class="course-group-title">Undergraduate (UG)</div>${courseTable(courses.undergraduate)}</div>` : ''}
+        ${courses.postgraduate && courses.postgraduate.length ? `<div class="course-group"><div class="course-group-title">Postgraduate (PG)</div>${courseTable(courses.postgraduate)}</div>` : ''}
+        ${courses.phd && courses.phd.length ? `<div class="course-group"><div class="course-group-title">PhD / Research</div>${courseTable(courses.phd)}</div>` : ''}
       </div>
-    </div>\`;
+    </div>`;
 
-  const alumniCard = (u.notable_alumni||[]).length ? \`
+  const alumniCard = (u.notable_alumni||[]).length ? `
     <div class="card">
       <div class="card-title">⭐ Notable Alumni</div>
-      <div class="tag-cloud">\${(u.notable_alumni||[]).map(a=>\`<div class="chip">⭐ \${a}</div>\`).join('')}</div>
-    </div>\` : '';
+      <div class="tag-cloud">${(u.notable_alumni||[]).map(a=>`<div class="chip">⭐ ${a}</div>`).join('')}</div>
+    </div>` : '';
 
-  const accredHTML = (u.accreditations||[]).map(a=>\`<div class="chip green">✅ \${a}</div>\`).join('');
+  const accredHTML = (u.accreditations||[]).map(a=>`<div class="chip green">✅ ${a}</div>`).join('');
   function sRow(key, val) {
     const cls = val && val.toLowerCase().startsWith('yes') ? 'yes' : val && val.toLowerCase().startsWith('no') ? 'no' : '';
-    return \`<div class="support-row"><span style="color:var(--dim);font-size:13px">\${key}</span><span class="support-val \${cls}" style="font-size:13px;text-align:right">\${v(val)}</span></div>\`;
+    return `<div class="support-row"><span style="color:var(--dim);font-size:13px">${key}</span><span class="support-val ${cls}" style="font-size:13px;text-align:right">${v(val)}</span></div>`;
   }
-  const supportCard = \`
+  const supportCard = `
     <div class="card">
       <div class="card-title">🏫 Campus & Support</div>
-      \${sRow('Campus', u.campus_size)}
-      \${sRow('Research', u.research_output)}
-      \${sRow('🇮🇳 Indian Society', support.indian_student_society)}
-      \${sRow('Visa Support', support.visa_support)}
-      \${sRow('Accommodation', support.accommodation_guaranteed)}
-      \${sRow('Career Services', support.career_services)}
-      \${accredHTML ? \`<div style="margin-top:12px"><div style="font-size:11px;color:var(--dim);margin-bottom:8px;font-weight:600;letter-spacing:.05em;text-transform:uppercase">Accreditations</div><div class="tag-cloud">\${accredHTML}</div></div>\` : ''}
-      \${u.website ? \`<div style="margin-top:14px"><a href="\${u.website}" target="_blank" rel="noopener" style="color:var(--gold);font-size:13px;text-decoration:none">🌐 Official Website ↗</a></div>\` : ''}
-    </div>\`;
+      ${sRow('Campus', u.campus_size)}
+      ${sRow('Research', u.research_output)}
+      ${sRow('🇮🇳 Indian Society', support.indian_student_society)}
+      ${sRow('Visa Support', support.visa_support)}
+      ${sRow('Accommodation', support.accommodation_guaranteed)}
+      ${sRow('Career Services', support.career_services)}
+      ${accredHTML ? `<div style="margin-top:12px"><div style="font-size:11px;color:var(--dim);margin-bottom:8px;font-weight:600;letter-spacing:.05em;text-transform:uppercase">Accreditations</div><div class="tag-cloud">${accredHTML}</div></div>` : ''}
+      ${u.website ? `<div style="margin-top:14px"><a href="${u.website}" target="_blank" rel="noopener" style="color:var(--gold);font-size:13px;text-decoration:none">🌐 Official Website ↗</a></div>` : ''}
+    </div>`;
 
-  $id('results').innerHTML = \`
-    \${header}
+  $id('results').innerHTML = `
+    ${header}
     <div class="info-grid">
-      \${rankCard}
-      \${feesCard}
-      \${intakesCard}
+      ${rankCard}
+      ${feesCard}
+      ${intakesCard}
     </div>
-    \${admCard}
-    \${scholCard}
-    \${loanCard}
-    \${coursesCard}
+    ${admCard}
+    ${scholCard}
+    ${loanCard}
+    ${coursesCard}
     <div class="info-grid">
-      \${alumniCard}
-      \${supportCard}
-    </div>\`;
+      ${alumniCard}
+      ${supportCard}
+    </div>`;
 }
 </script>
 </body>
