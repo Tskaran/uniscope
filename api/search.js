@@ -113,7 +113,7 @@ Return ONLY valid JSON — no markdown fences, no explanation, no preamble.
 
   try {
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -130,8 +130,9 @@ Return ONLY valid JSON — no markdown fences, no explanation, no preamble.
 
     if (!geminiRes.ok) {
       const errData = await geminiRes.json();
-      console.error('Gemini API error:', errData);
-      return res.status(502).json({ error: 'AI service error. Please try again.' });
+      const geminiMsg = errData?.error?.message || JSON.stringify(errData);
+      console.error('Gemini API error:', geminiMsg);
+      return res.status(502).json({ error: `AI service error: ${geminiMsg}` });
     }
 
     const geminiData = await geminiRes.json();
